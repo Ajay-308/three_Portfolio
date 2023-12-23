@@ -8,7 +8,7 @@ import Loader from "../components/Loader";
 // import { soundoff, soundon } from "../assets/icons";
 //import { Bird, Island, Bus, } from "../models";
 import Bird from "../model/Bird";
-import { Island, Dragon } from "../model";
+import { Island } from "../model";
 
 
 const Home = () => {
@@ -30,6 +30,20 @@ const Home = () => {
     //     };
     // }, [isPlayingMusic]);
 
+    // const adjustIslandForScreenSize = () => {
+    //     let screenScale, screenPosition;
+
+    //     if (window.innerWidth < 768) {
+    //         screenScale = [0.9, 0.9, 0.9];
+    //         screenPosition = [0, -6.5, -43.4];
+    //     } else {
+    //         screenScale = [2, 2, 2];
+    //         screenPosition = [20, -240, -720];
+    //     }
+
+    //     return [screenScale, screenPosition];
+    // };
+
     const adjustIslandForScreenSize = () => {
         let screenScale, screenPosition;
 
@@ -44,23 +58,7 @@ const Home = () => {
         return [screenScale, screenPosition];
     };
 
-    const adjustBiDragonForScreenSize = () => {
-        let DragonScale, DragonPosition;
 
-        if (window.innerWidth < 768) {
-            DragonScale = [0.5, 0.5, 0.5]; // Smaller scale for the bus on smaller screens
-            DragonPosition = [13, -4, -4]; // Set fixed position on the island (adjust x, y, z values)
-        } else {
-            DragonScale = [20, 20, 20]; // Regular scale for the bus on larger screens
-            DragonPosition = [13, -3, -22]; // Same fixed position on the island
-        }
-
-        return [DragonScale, DragonPosition];
-    };
-
-
-
-    const [biDragonScale, biDragonPosition] = adjustBiDragonForScreenSize();
     const [islandScale, islandPosition] = adjustIslandForScreenSize();
 
     return (
@@ -75,7 +73,7 @@ const Home = () => {
                 camera={{ near: 0.1, far: 1000 }}
             >
                 <Suspense fallback={<Loader />}>
-                    <directionalLight position={[1, 1, 1]} intensity={1} />
+                    <directionalLight position={[1, 1, 1]} intensity={.3} />
                     <ambientLight intensity={0.1} />
                     <pointLight position={[10, 5, 10]} intensity={0} />
                     <spotLight
@@ -84,20 +82,19 @@ const Home = () => {
                         penumbra={0}
                         intensity={0}
                     />
+                    <hemisphereLight
+                        skyColor='#b1e1ff'
+                        groundColor='#000000'
+                        intensity={1}
+                    />
                     <Bird />
                     <Island
                         isRotating={isRotating}
                         setIsRotating={setIsRotating}
                         setCurrentStage={setCurrentStage}
                         position={islandPosition}
-                        rotation={[0.1, 4.7077, 0]}
+                        rotation={[0.1, 5.7077, 0]}
                         scale={islandScale}
-                    />
-                    <Dragon
-                        isRotating={isRotating}
-                        position={biDragonPosition}
-                        rotation={[0, 20.1, 0]}
-                        scale={biDragonScale}
                     />
                 </Suspense>
             </Canvas>

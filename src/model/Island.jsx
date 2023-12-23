@@ -1,15 +1,12 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
 
 
+import { a } from "@react-spring/three";
 import { useEffect, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 
-import { a } from "@react-spring/three"
-
-import IslandSence from "../assets/3d models/low_poly_island.glb";
+import islandScene from "../assets/3d models/free_-_skybox_tropical_island.glb";
 
 export function Island({
     isRotating,
@@ -18,12 +15,10 @@ export function Island({
     currentFocusPoint,
     ...props
 }) {
-    const islandRef = useRef()
+    const islandRef = useRef();
     // Get access to the Three.js renderer and viewport
     const { gl, viewport } = useThree();
-    const { nodes, materials } = useGLTF(
-        IslandSence
-    );
+    const { nodes, materials } = useGLTF(islandScene);
 
     // Use a ref for the last mouse x position
     const lastX = useRef(0);
@@ -44,12 +39,14 @@ export function Island({
         // Store the current clientX position for reference
         lastX.current = clientX;
     };
+
     // Handle pointer (mouse or touch) up event
     const handlePointerUp = (event) => {
         event.stopPropagation();
         event.preventDefault();
         setIsRotating(false);
     };
+
     // Handle pointer (mouse or touch) move event
     const handlePointerMove = (event) => {
         event.stopPropagation();
@@ -94,6 +91,7 @@ export function Island({
             setIsRotating(false);
         }
     };
+
     useEffect(() => {
         // Add event listeners for pointer and keyboard events
         const canvas = gl.domElement;
@@ -114,6 +112,7 @@ export function Island({
     }, [gl, handlePointerDown, handlePointerUp, handlePointerMove]);
 
     // This function is called on each frame update
+
     useFrame(() => {
         // If not rotating, apply damping to slow down the rotation (smoothly)
         if (!isRotating) {
@@ -130,22 +129,6 @@ export function Island({
             // When rotating, determine the current stage based on island's orientation
             const rotation = islandRef.current.rotation.y;
 
-            /**
-             * Normalize the rotation value to ensure it stays within the range [0, 2 * Math.PI].
-             * The goal is to ensure that the rotation value remains within a specific range to
-             * prevent potential issues with very large or negative rotation values.
-             *  Here's a step-by-step explanation of what this code does:
-             *  1. rotation % (2 * Math.PI) calculates the remainder of the rotation value when divided
-             *     by 2 * Math.PI. This essentially wraps the rotation value around once it reaches a
-             *     full circle (360 degrees) so that it stays within the range of 0 to 2 * Math.PI.
-             *  2. (rotation % (2 * Math.PI)) + 2 * Math.PI adds 2 * Math.PI to the result from step 1.
-             *     This is done to ensure that the value remains positive and within the range of
-             *     0 to 2 * Math.PI even if it was negative after the modulo operation in step 1.
-             *  3. Finally, ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI) applies another
-             *     modulo operation to the value obtained in step 2. This step guarantees that the value
-             *     always stays within the range of 0 to 2 * Math.PI, which is equivalent to a full
-             *     circle in radians.
-             */
             const normalizedRotation =
                 ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
@@ -169,10 +152,20 @@ export function Island({
         }
     });
 
-    return (
-        <a.group {...props} dispose={null}>
 
+
+    return (
+        <a.group ref={islandRef} {...props} dispose={null}>
+            <group scale={0.01}>
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Sphere__0.geometry}
+                    material={materials["Scene_-_Root"]}
+                    rotation={[-Math.PI / 2, 0, 0]}
+                    scale={50000}
+                />
+            </group>
         </a.group>
     );
 }
-
